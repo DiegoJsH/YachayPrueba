@@ -1,78 +1,114 @@
 # Guía de Deployment - YachayTinkiy
 
-## Variables de Entorno Requeridas
+## ✅ Configuración Actual
 
-Tu aplicación Spring Boot requiere las siguientes variables de entorno. Debes configurarlas en tu plataforma de deployment (Render, Railway, Vercel, etc.).
+Tu aplicación está **hardcodeada** con los siguientes datos:
 
-### Base de Datos PostgreSQL
-
+### Base de Datos PostgreSQL (Render)
 ```
-DB_URL=jdbc:postgresql://host:puerto/nombre_base_datos
-DB_USERNAME=usuario_postgres
-DB_PASSWORD=contraseña_postgres
-```
-
-**Ejemplo:**
-```
-DB_URL=jdbc:postgresql://dpg-d91iv5mq1p3s73c28a00-a/yachaytinkiy
-DB_USERNAME=yachaytinkiy_user
-DB_PASSWORD=tu_contraseña_segura
+URL: jdbc:postgresql://dpg-d91iv5mq1p3s73c28a00-a.oregon-postgres.render.com/yachaytinkiy
+Usuario: yachaytinkiy_user
+Contraseña: ✓ Configurada en application.properties
 ```
 
-### PDFMonkey (Generación de PDFs)
-
+### PDFMonkey (API de Certificados)
 ```
-PDFMONKEY_API_KEY=tu_clave_api
-PDFMONKEY_TEMPLATE_ID=tu_template_id
+API Key: ✓ Configurada en application.properties
+Template ID: ✓ Configurada en application.properties
 ```
 
-## Pasos para Deploy en Render
+## 🚀 Deploy en Render (Paso a Paso)
 
-1. **Conecta tu repositorio GitHub** a Render
-2. **Ve a Environment** en la configuración del servicio
-3. **Agrega las variables de entorno:**
-   - DB_URL
-   - DB_USERNAME
-   - DB_PASSWORD
-   - PDFMONKEY_API_KEY (opcional si no usas PDFMonkey)
-   - PDFMONKEY_TEMPLATE_ID (opcional si no usas PDFMonkey)
+### 1. Prerequisitos
+- ✅ Repositorio GitHub conectado
+- ✅ Código pusheado a `main`
+- ✅ Credenciales BD configuradas en `application.properties`
 
-4. **Deploy automático** se activará cuando hagas push a `main`
+### 2. Crear Servicio en Render
 
-## Pasos para Deploy en Railway
+1. Ve a [https://render.com/dashboard](https://render.com/dashboard)
+2. Click en **"New +"** → **"Web Service"**
+3. Selecciona tu repositorio GitHub: **DiegoJsH/YachayPrueba**
+4. Configura:
+   - **Name:** `yachay-tinkiy`
+   - **Environment:** Docker
+   - **Region:** Elige la más cercana
+   - **Branch:** `main`
 
-1. **Conecta tu repositorio GitHub**
-2. **Ve a Variables** en Railway Dashboard
-3. **Agrega cada variable de entorno**
-4. **Deploy automático** se activará
+### 3. Build & Deploy Settings
 
-## Pasos para Deploy Local (Desarrollo)
+- **Build Command:** Leave default (usa `Dockerfile`)
+- **Start Command:** Leave default (define en `Dockerfile`)
 
-1. Crea un archivo `.env` en la raíz del proyecto (NO lo commits):
+### 4. Plans
+- Elige plan según tu necesidad (Free plan = $0 pero se duerme)
+
+### 5. Deploy
+- Click en **"Deploy"**
+- Espera 5-10 minutos mientras se construye y deploy
+
+## 📋 Checklist Pre-Deploy
+
+Asegúrate de que todo esté correcto:
+
+- [ ] `Dockerfile` está actualizado (Java 17 ✓)
+- [ ] `application.properties` tiene credenciales ✓
+- [ ] `pom.xml` tiene versión Java 17 ✓
+- [ ] `.dockerignore` existe ✓
+- [ ] Código está en `main` branch ✓
+- [ ] No hay errores en tests locales
+
+## 🔍 Verificación Post-Deploy
+
+1. Accede a tu URL (ej: `https://yachay-tinkiy.onrender.com`)
+2. Debería mostrar la página de login
+3. Revisa los logs en Render Dashboard:
    ```
-   DB_URL=jdbc:postgresql://localhost:5432/yachaytinkiy
-   DB_USERNAME=yachaytinkiy_user
-   DB_PASSWORD=contraseña_local
+   "Hibernate creating tables..."
+   "Server started at port 8080"
+   "Application started successfully"
    ```
 
-2. Ejecuta:
-   ```bash
-   export $(cat .env | xargs)
-   ./mvnw spring-boot:run
-   ```
+## ⚠️ Posibles Problemas
 
-## Seguridad
+### Error: "Connection refused"
+- Verifica que los datos de BD en `application.properties` sean correctos
+- Renderization de la BD puede tomar varios minutos
 
-⚠️ **IMPORTANTE:**
-- NUNCA hardcodees credenciales en `application.properties`
-- NUNCA commits el archivo `.env` (agrega a `.gitignore`)
-- Usa variables de entorno SIEMPRE en producción
-- Cambia las contraseñas en producción
+### Error: "Out of Memory"
+- Aumenta el plan en Render
+- Verifica `JAVA_OPTS` en Dockerfile
 
-## Verificación
+### La aplicación se duerme (Free Plan)
+- Elige plan pagado o usa Railway/Vercel
+- Upgrade a "Starter" plan en Render ($7/mes)
 
-Después de deploy, verifica que tu aplicación esté corriendo correctamente:
-- La base de datos debe conectarse sin errores
-- Deberías ver logs de Hibernate creando/actualizando tablas
-- El servidor debe estar disponible en el puerto configurado
+## 📝 Pasos Rápidos para hacer Build Local
+
+```bash
+# Compilar JAR
+./mvnw clean package
+
+# Ver target/
+ls target/yachaytinkiy-0.0.1-SNAPSHOT.jar
+
+# Build Docker image (opcional para probar localmente)
+docker build -t yachay-tinkiy .
+docker run -p 8080:8080 yachay-tinkiy
+```
+
+## 🔐 Notas de Seguridad
+
+⚠️ **Tus credenciales están hardcodeadas en el repositorio:**
+- Las credenciales de BD están visibles en `application.properties`
+- Las credenciales de PDFMonkey también están expuestas
+- Si este es un proyecto real/producción, considera usar variables de entorno
+
+**Para producción real:**
+```bash
+# En lugar de hardcodear, usa variables de entorno en Render
+export DB_URL=...
+export DB_USERNAME=...
+export DB_PASSWORD=...
+```
 
