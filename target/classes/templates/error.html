@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Error - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content" class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 text-center">
+                    <!-- Icono de error -->
+                    <div class="mb-4">
+                        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 5rem;"></i>
+                    </div>
+
+                    <!-- Título del error -->
+                    <h1 class="display-4 fw-bold mb-3">¡Ups! Algo salió mal</h1>
+
+                    <!-- Mensaje de error -->
+                    <p class="lead text-muted mb-4" th:text="${error}">
+                        Ha ocurrido un error inesperado
+                    </p>
+
+                    <!-- Detalles del error (solo en desarrollo) -->
+                    <div th:if="${message}" class="alert alert-danger text-start">
+                        <strong>Detalles:</strong>
+                        <p class="mb-0" th:text="${message}">Mensaje de error</p>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button onclick="history.back()" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver Atrás
+                        </button>
+                        <a th:href="@{/}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-home me-2"></i>Ir al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

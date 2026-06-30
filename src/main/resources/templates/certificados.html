@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Mis Certificados - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content">
+            <!-- Header -->
+            <section class="bg-light py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="display-5 fw-bold mb-2">
+                                <i class="fas fa-certificate text-warning me-2"></i>
+                                Mis Certificados
+                            </h1>
+                            <p class="lead text-muted mb-0">
+                                Descarga y comparte tus logros
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <a th:href="@{/perfil/alumno}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Volver al Perfil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Certificados -->
+            <section class="py-5">
+                <div class="container">
+                    <!-- Mensaje si no hay certificados -->
+                    <div th:if="${#lists.isEmpty(certificados)}" 
+                         class="text-center py-5">
+                        <i class="fas fa-certificate text-muted" style="font-size: 5rem;"></i>
+                        <h3 class="mt-4 mb-3">Aún no tienes certificados</h3>
+                        <p class="lead text-muted mb-4">
+                            Completa tus cursos al 100% para obtener certificados digitales
+                        </p>
+                        <a th:href="@{/mis-cursos}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-book-reader me-2"></i>Ver Mis Cursos
+                        </a>
+                    </div>
+
+                    <!-- Lista de certificados -->
+                    <div class="row g-4" th:unless="${#lists.isEmpty(certificados)}">
+                        <div class="col-lg-6" th:each="certificado : ${certificados}">
+                            <div class="card h-100 shadow-sm">
+                                <!-- Header del certificado -->
+                                <div class="card-header bg-gradient text-white" 
+                                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-award me-2"></i>
+                                        Certificado de Finalización
+                                    </h5>
+                                </div>
+
+                                <!-- Contenido -->
+                                <div class="card-body">
+                                    <h4 class="card-title mb-3" th:text="${certificado.tituloCurso}">
+                                        Título del Curso
+                                    </h4>
+
+                                    <div class="mb-3">
+                                        <p class="text-muted mb-2">
+                                            <i class="fas fa-user me-2"></i>
+                                            <strong>Alumno:</strong> 
+                                            <span th:text="${certificado.nombreAlumno}">Nombre</span>
+                                        </p>
+                                        <p class="text-muted mb-2">
+                                            <i class="fas fa-chalkboard-teacher me-2"></i>
+                                            <strong>Instructor:</strong>
+                                            <span th:text="${certificado.nombreDocente}">Docente</span>
+                                        </p>
+                                        <p class="text-muted mb-2">
+                                            <i class="fas fa-calendar me-2"></i>
+                                            <strong>Fecha de emisión:</strong>
+                                            <span th:text="${#temporals.format(certificado.fechaEmision, 'dd/MM/yyyy')}">
+                                                01/01/2024
+                                            </span>
+                                        </p>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-shield-alt me-2"></i>
+                                            <strong>Código:</strong>
+                                            <code th:text="${certificado.codigoVerificacion}">CERT-ABC123</code>
+                                        </p>
+                                    </div>
+                                    <!-- Botones -->
+                                    <div class="d-grid gap-2">
+                                        <a th:href="${certificado.urlPdf}" 
+                                           target="_blank"
+                                           class="btn btn-success btn-lg">
+                                            <i class="fas fa-download me-2"></i>
+                                            Descargar Certificado (PDF)
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-outline-primary"
+                                                th:onclick="'copiarCodigo(\'' + ${certificado.codigoVerificacion} + '\')'">
+                                            <i class="fas fa-copy me-2"></i>
+                                            Copiar Código de Verificación
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="card-footer bg-light text-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        Certificado verificable en línea
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Script para copiar código -->
+        <script>
+            function copiarCodigo(codigo) {
+                navigator.clipboard.writeText(codigo).then(() => {
+                    alert('Código copiado: ' + codigo);
+                }).catch(err => {
+                    console.error('Error al copiar:', err);
+                });
+            }
+        </script>
+    </body>
+</html>

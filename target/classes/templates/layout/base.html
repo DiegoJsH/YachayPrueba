@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content)">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <th:block th:replace="${title}"></th:block>
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link th:href="@{/css/styles.css}" rel="stylesheet">
+        <link rel="icon" type="image/png" th:href="@{/images/quipu-icon.png}">
+
+        <!-- Extra head content (para páginas específicas) -->
+        <th:block th:replace="${extraHead} ?: ~{}"></th:block>
+    </head>
+    <body>
+        <!-- Navbar -->
+        <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+        <!-- Alertas flash -->
+        <div class="container mt-3">
+            <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show">
+                <span th:text="${param.success}">Operación exitosa</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show">
+                <span th:text="${param.error}">Ha ocurrido un error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+                <span th:text="${successMessage}">Operación exitosa</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+                <span th:text="${errorMessage}">Ha ocurrido un error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <main th:replace="${content}">
+            <!-- El contenido de cada página se inserta aquí -->
+        </main>
+
+        <!-- Footer -->
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Custom JS -->
+        <script th:src="@{/js/main.js}"></script>
+
+        <!-- Extra scripts (para páginas específicas) -->
+    <th:block th:replace="${extraScripts} ?: ~{}"></th:block>
+    </body>
+</html>

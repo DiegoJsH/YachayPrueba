@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Mi Perfil - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content">
+            <!-- Header del perfil -->
+            <section class="bg-light py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-4"
+                                     style="width: 100px; height: 100px; font-size: 2.5rem;">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <h1 class="display-6 fw-bold mb-2" th:text="${alumno.nombreCompleto}">
+                                        Nombre del Alumno
+                                    </h1>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        <span th:text="${alumno.email}">email@example.com</span>
+                                    </p>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        Miembro desde 
+                                        <span th:text="${#temporals.format(alumno.fechaRegistro, 'MMMM yyyy')}">
+                                            enero 2024
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <!-- Botón para ir a vista completa de cursos -->
+                            <a th:href="@{/mis-cursos}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-book-reader me-2"></i>Ver Todos Mis Cursos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estadísticas -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${cursosEnProgreso}">0</span>
+                                <span class="stats-label">En Progreso</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${cursosCompletados}">0</span>
+                                <span class="stats-label">Completados</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${totalHorasEstudiadas}">0</span>
+                                <span class="stats-label">Horas Estudiadas</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${#lists.size(inscripciones)}">0</span>
+                                <span class="stats-label">Total Cursos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs de contenido -->
+                    <ul class="nav nav-tabs mb-4" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" 
+                                    data-bs-target="#cursos-tab" type="button">
+                                <i class="fas fa-book me-2"></i>Mis Cursos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" 
+                                    data-bs-target="#certificados-tab" type="button">
+                                <i class="fas fa-certificate me-2"></i>Certificados
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" 
+                                    data-bs-target="#configuracion-tab" type="button">
+                                <i class="fas fa-cog me-2"></i>Configuración
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido de tabs -->
+                    <div class="tab-content">
+                        <!-- Tab: Mis Cursos -->
+                        <div class="tab-pane fade show active" id="cursos-tab">
+                            <!-- Mensaje si no hay cursos -->
+                            <div th:if="${#lists.isEmpty(inscripciones)}" 
+                                 class="alert alert-info text-center">
+                                <i class="fas fa-info-circle fa-3x mb-3"></i>
+                                <h4>Aún no estás inscrito en ningún curso</h4>
+                                <p>Explora nuestro catálogo y comienza tu aprendizaje hoy</p>
+                                <a th:href="@{/catalogo}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-search me-2"></i>Explorar Cursos
+                                </a>
+                            </div>
+
+                            <!-- Vista previa de cursos (máximo 6) -->
+                            <div class="row g-4" th:unless="${#lists.isEmpty(inscripciones)}">
+                                <div class="col-md-6 col-lg-4" 
+                                     th:each="inscripcion, iterStat : ${inscripciones}"
+                                     th:if="${iterStat.index < 6}">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title" th:text="${inscripcion.tituloCurso}">
+                                                Título del Curso
+                                            </h5>
+
+                                            <!-- Progreso -->
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <small class="text-muted">Progreso</small>
+                                                    <small class="fw-bold" th:text="${inscripcion.progreso + '%'}">
+                                                        0%
+                                                    </small>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar" 
+                                                         th:style="'width: ' + ${inscripcion.progreso} + '%'"
+                                                         role="progressbar">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Lecciones -->
+                                            <p class="text-muted small mb-3">
+                                                <i class="fas fa-check-circle text-success me-1"></i>
+                                                <span th:text="${inscripcion.leccionesCompletadas}">0</span> / 
+                                                <span th:text="${inscripcion.totalLecciones}">0</span> lecciones
+                                            </p>
+
+                                            <!-- Badge de completado -->
+                                            <div th:if="${inscripcion.completado}" class="mb-3">
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-trophy me-1"></i>Completado
+                                                </span>
+                                            </div>
+
+                                            <!-- Botones -->
+                                            <div class="d-flex gap-2">
+                                                <a th:href="@{/cursos/{id}(id=${inscripcion.cursoId})}" 
+                                                   class="btn btn-outline-primary btn-sm flex-grow-1">
+                                                    <i class="fas fa-eye me-1"></i>Ver Curso
+                                                </a>
+                                                <a th:href="@{/cursos/{id}/aprender(id=${inscripcion.cursoId})}" 
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-play me-1"></i>Continuar
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-light">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Inscrito el 
+                                                <span th:text="${#temporals.format(inscripcion.fechaInscripcion, 'dd/MM/yyyy')}">
+                                                    01/01/2024
+                                                </span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botón "Ver todos" si hay más de 6 cursos -->
+                            <div th:if="${#lists.size(inscripciones) > 6}" 
+                                 class="text-center mt-4">
+                                <a th:href="@{/mis-cursos}" class="btn btn-outline-primary btn-lg">
+                                    <i class="fas fa-list me-2"></i>
+                                    Ver Todos los Cursos 
+                                    (<span th:text="${#lists.size(inscripciones)}">0</span>)
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Certificados -->
+                        <div class="tab-pane fade" id="certificados-tab">
+                            <!-- Mensaje si no hay certificados -->
+                            <div th:if="${#lists.isEmpty(inscripciones.?[completado == true])}" 
+                                 class="alert alert-info text-center">
+                                <i class="fas fa-certificate fa-3x mb-3"></i>
+                                <h4>Obtén tus certificados</h4>
+                                <p>Completa tus cursos para recibir certificados digitales verificables</p>
+                            </div>
+
+                            <!-- Lista de cursos completados con certificados -->
+                            <div th:unless="${#lists.isEmpty(inscripciones.?[completado == true])}">
+                                <div class="row g-4">
+                                    <div class="col-md-6" 
+                                         th:each="inscripcion : ${inscripciones.?[completado == true]}">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="fas fa-trophy text-warning me-2"></i>
+                                                    <span th:text="${inscripcion.tituloCurso}">Curso</span>
+                                                </h5>
+
+                                                <p class="text-muted small mb-3">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    Completado el 
+                                                    <span th:text="${#temporals.format(inscripcion.fechaInscripcion, 'dd/MM/yyyy')}">
+                                                        01/01/2024
+                                                    </span>
+                                                </p>
+
+                                                <a th:href="@{/certificados}" 
+                                                   class="btn btn-success w-100">
+                                                    <i class="fas fa-certificate me-2"></i>
+                                                    Ver Certificado
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tab: Configuración -->
+                        <div class="tab-pane fade" id="configuracion-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cog me-2"></i>
+                                        Configuración de la Cuenta
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form th:action="@{/perfil/alumno/actualizar}" method="post">
+                                        <!-- Token CSRF -->
+                                        <input type="hidden" 
+                                               th:name="${_csrf.parameterName}" 
+                                               th:value="${_csrf.token}"/>
+
+                                        <div class="mb-3">
+                                            <label for="nombreCompleto" class="form-label">
+                                                Nombre Completo <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nombreCompleto"
+                                                   name="nombreCompleto"
+                                                   th:value="${alumno.nombreCompleto}"
+                                                   minlength="3"
+                                                   maxlength="100"
+                                                   required>
+                                            <div class="form-text">
+                                                Entre 3 y 100 caracteres
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" 
+                                                   class="form-control" 
+                                                   th:value="${alumno.email}" 
+                                                   disabled>
+                                            <small class="text-muted">
+                                                <i class="fas fa-lock me-1"></i>
+                                                El email no puede ser modificado
+                                            </small>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>
+                                                Guardar Cambios
+                                            </button>
+                                            <button type="reset" class="btn btn-outline-secondary">
+                                                <i class="fas fa-undo me-2"></i>
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

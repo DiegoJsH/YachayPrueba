@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Catálogo de Cursos - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content">
+            <!-- Header del catálogo -->
+            <section class="bg-light py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 mb-3 mb-lg-0">
+                            <h1 class="display-5 fw-bold mb-2">Catálogo de Cursos</h1>
+                            <p class="lead text-muted">
+                                Explora nuestra colección de cursos y comienza tu aprendizaje hoy
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <!-- Barra de búsqueda -->
+                            <form th:action="@{/catalogo}" method="get" class="d-flex gap-2">
+                                <input type="text" 
+                                       name="busqueda" 
+                                       class="form-control form-control-lg" 
+                                       placeholder="Buscar cursos..."
+                                       th:value="${busqueda}">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filtros y cursos -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row">
+                        <!-- Sidebar de filtros -->
+                        <div class="col-lg-3 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <i class="fas fa-filter me-2"></i>
+                                    Filtros
+                                </div>
+                                <div class="card-body">
+                                    <form th:action="@{/catalogo}" method="get">
+                                        <!-- Filtro por categoría -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Categoría</label>
+                                            <select name="categoria" class="form-select" onchange="this.form.submit()">
+                                                <option value="">Todas las categorías</option>
+                                                <option value="Programación" 
+                                                        th:selected="${categoriaSeleccionada == 'Programación'}">
+                                                    Programación
+                                                </option>
+                                                <option value="Diseño" 
+                                                        th:selected="${categoriaSeleccionada == 'Diseño'}">
+                                                    Diseño
+                                                </option>
+                                                <option value="Marketing" 
+                                                        th:selected="${categoriaSeleccionada == 'Marketing'}">
+                                                    Marketing
+                                                </option>
+                                                <option value="Negocios" 
+                                                        th:selected="${categoriaSeleccionada == 'Negocios'}">
+                                                    Negocios
+                                                </option>
+                                                <option value="Idiomas" 
+                                                        th:selected="${categoriaSeleccionada == 'Idiomas'}">
+                                                    Idiomas
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Filtro por nivel -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Nivel</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       name="nivel" 
+                                                       value="PRINCIPIANTE" 
+                                                       id="principiante"
+                                                       th:checked="${nivelesSeleccionados.contains('PRINCIPIANTE')}">
+                                                <label class="form-check-label" for="principiante">
+                                                    Principiante
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       name="nivel" 
+                                                       value="INTERMEDIO" 
+                                                       id="intermedio"
+                                                       th:checked="${nivelesSeleccionados.contains('INTERMEDIO')}">
+                                                <label class="form-check-label" for="intermedio">
+                                                    Intermedio
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       name="nivel" 
+                                                       value="AVANZADO" 
+                                                       id="avanzado"
+                                                       th:checked="${nivelesSeleccionados.contains('AVANZADO')}">
+                                                <label class="form-check-label" for="avanzado">
+                                                    Avanzado
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       name="nivel" 
+                                                       value="TODOS" 
+                                                       id="todos"
+                                                       th:checked="${nivelesSeleccionados.contains('TODOS')}">
+                                                <label class="form-check-label" for="todos">
+                                                    Todos los niveles
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-filter me-1"></i>
+                                            Aplicar Filtros
+                                        </button>
+                                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary w-100 mt-2">
+                                            <i class="fas fa-times me-1"></i>
+                                            Limpiar Filtros
+                                        </a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid de cursos -->
+                        <div class="col-lg-9">
+                            <!-- Mensaje si no hay cursos -->
+                            <div th:if="${#lists.isEmpty(cursos)}" class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No se encontraron cursos con los filtros seleccionados
+                            </div>
+
+                            <!-- Grid de cursos -->
+                            <div class="row g-4" th:unless="${#lists.isEmpty(cursos)}">
+                                <div class="col-md-6 col-lg-4" th:each="curso : ${cursos}">
+                                    <div class="card course-card h-100">
+                                        <!-- Imagen del curso -->
+                                        <div class="course-image">
+                                            <i class="fas fa-book-open me-2"></i>
+                                            <span th:text="${curso.categoria}">Categoría</span>
+                                        </div>
+
+                                        <!-- Contenido -->
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title" th:text="${curso.titulo}">
+                                                Título del Curso
+                                            </h5>
+
+                                            <p class="card-text text-muted flex-grow-1" 
+                                               th:text="${#strings.abbreviate(curso.descripcion, 100)}">
+                                                Descripción del curso...
+                                            </p>
+
+                                            <!-- Metadatos -->
+                                            <div class="d-flex justify-content-between text-muted small mb-3">
+                                                <span>
+                                                    <i class="fas fa-play-circle me-1"></i>
+                                                    <span th:text="${curso.cantidadLecciones}">0</span> lecciones
+                                                </span>
+                                                <span>
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <span th:text="${curso.duracion}">0</span>h
+                                                </span>
+                                                <span>
+                                                    <i class="fas fa-signal me-1"></i>
+                                                    <span th:text="${curso.nivel}">Nivel</span>
+                                                </span>
+                                            </div>
+
+                                            <!-- Precio y botón -->
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="h5 mb-0 text-primary">
+                                                    S/ <span th:text="${curso.precio}">0.00</span>
+                                                </span>
+                                                <a th:href="@{/cursos/{id}(id=${curso.id})}" 
+                                                   class="btn btn-primary">
+                                                    Ver Curso
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

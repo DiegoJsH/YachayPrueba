@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <!-- Footer Fragment -->
+        <footer th:fragment="footer" class="bg-dark text-white py-4 mt-5">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <h5 class="text-white mb-3">
+                            <i class="fas fa-graduation-cap me-2"></i>Yachay T'inkiy
+                        </h5>
+                        <p class="small text-white-50">
+                            La plataforma donde el conocimiento y la conexión se unen 
+                            para transformar tu futuro profesional.
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 text-center">
+                        <h5 class="text-white mb-3">Síguenos</h5>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="#" class="text-white fs-4 hover-scale">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="text-white fs-4 hover-scale">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-white fs-4 hover-scale">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="text-white fs-4 hover-scale">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 text-md-end">
+                        <h5 class="text-white mb-3">Contacto</h5>
+                        <p class="small text-white-50 mb-1">
+                            <i class="fas fa-envelope me-2"></i>support@yachaytinkiy.com
+                        </p>
+                        <p class="small text-white-50 mb-0">
+                            <i class="fas fa-phone me-2"></i>+51 987 654 321
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="my-3 border-secondary">
+
+                <div class="text-center small text-white-50">
+                    <p class="mb-0">
+                        &copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> 
+                        Yachay T'inkiy. Todos los derechos reservados.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

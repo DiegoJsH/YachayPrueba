@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Mi Perfil de Docente - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content">
+            <!-- Header del perfil -->
+            <section class="bg-light py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-4"
+                                     style="width: 100px; height: 100px; font-size: 2.5rem;">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div>
+                                    <h1 class="display-6 fw-bold mb-2" th:text="${docente.nombreCompleto}">
+                                        Nombre del Docente
+                                    </h1>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-brain me-2"></i>
+                                        <span th:text="${docente.especialidad}">Especialidad</span>
+                                    </p>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-graduation-cap me-2"></i>
+                                        <span th:text="${docente.gradoAcademico}">Grado Académico</span>
+                                    </p>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        <span th:text="${docente.email}">email@example.com</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
+                            <a th:href="@{/cursos/crear}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Crear Nuevo Curso
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Biografía -->
+            <section class="py-4 bg-white" th:if="${docente.biografia != null and !#strings.isEmpty(docente.biografia)}">
+                <div class="container">
+                    <div class="card border-0">
+                        <div class="card-body">
+                            <h5 class="mb-3">
+                                <i class="fas fa-file-alt me-2"></i>Biografía
+                            </h5>
+                            <p class="text-muted mb-0" th:text="${docente.biografia}">
+                                Biografía del docente...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estadísticas -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${cursosCreados != null ? #lists.size(cursosCreados) : 0}">0</span>
+                                <span class="stats-label">Cursos Creados</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${totalAlumnos ?: 0}">0</span>
+                                <span class="stats-label">Alumnos</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number">4.8</span>
+                                <span class="stats-label">Calificación</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stats-card">
+                                <span class="stats-number">156</span>
+                                <span class="stats-label">Reseñas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs mb-4" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" 
+                                    data-bs-target="#mis-cursos-tab" type="button">
+                                <i class="fas fa-book me-2"></i>Mis Cursos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" 
+                                    data-bs-target="#alumnos-tab" type="button">
+                                <i class="fas fa-users me-2"></i>Alumnos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" 
+                                    data-bs-target="#configuracion-tab" type="button">
+                                <i class="fas fa-cog me-2"></i>Configuración
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido de tabs -->
+                    <div class="tab-content">
+                        <!-- Tab: Mis Cursos -->
+                        <div class="tab-pane fade show active" id="mis-cursos-tab">
+                            <!-- Mensaje si no hay cursos -->
+                            <div th:if="${cursosCreados == null or #lists.isEmpty(cursosCreados)}" 
+                                 class="alert alert-info text-center">
+                                <i class="fas fa-info-circle fa-3x mb-3"></i>
+                                <h4>Aún no has creado ningún curso</h4>
+                                <p>Comparte tu conocimiento creando tu primer curso</p>
+                                <a th:href="@{/cursos/crear}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus-circle me-2"></i>Crear Curso
+                                </a>
+                            </div>
+
+                            <!-- Lista de cursos creados -->
+                            <div class="row g-4" th:unless="${cursosCreados == null or #lists.isEmpty(cursosCreados)}">
+                                <div class="col-md-6 col-lg-4" th:each="curso : ${cursosCreados}">
+                                    <div class="card h-100">
+                                        <div class="course-image">
+                                            <i class="fas fa-book-open me-2"></i>
+                                            <span th:text="${curso.categoria}">Categoría</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title" th:text="${curso.titulo}">
+                                                Título del Curso
+                                            </h5>
+
+                                            <!-- Metadatos -->
+                                            <div class="mb-3">
+                                                <p class="text-muted small mb-2">
+                                                    <i class="fas fa-users me-1"></i>
+                                                    <span>0</span> alumnos inscritos
+                                                </p>
+                                                <p class="text-muted small mb-2">
+                                                    <i class="fas fa-play-circle me-1"></i>
+                                                    <span th:text="${curso.cantidadLecciones}">0</span> lecciones
+                                                </p>
+                                                <p class="text-muted small mb-0">
+                                                    <i class="fas fa-star me-1 text-warning"></i>
+                                                    4.5 (12 reseñas)
+                                                </p>
+                                            </div>
+
+                                            <!-- Botones -->
+                                            <div class="d-flex gap-2">
+                                                <a th:href="@{/cursos/{id}(id=${curso.id})}" 
+                                                   class="btn btn-outline-primary btn-sm flex-grow-1">
+                                                    <i class="fas fa-eye me-1"></i>Ver
+                                                </a>
+                                                <a th:href="@{/cursos/{id}/editar(id=${curso.id})}" 
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>Editar
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer bg-light">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Creado el 
+                                                <span th:text="${#temporals.format(curso.fechaCreacion, 'dd/MM/yyyy')}">
+                                                    01/01/2024
+                                                </span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Alumnos -->
+                        <div class="tab-pane fade" id="alumnos-tab">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Vista de alumnos en desarrollo
+                            </div>
+                        </div>
+
+                        <!-- Tab: Configuración -->
+                        <div class="tab-pane fade" id="configuracion-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cog me-2"></i>
+                                        Configuración de la Cuenta
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form th:action="@{/perfil/docente/actualizar}" method="post">
+                                        <!-- Token CSRF -->
+                                        <input type="hidden" 
+                                               th:name="${_csrf.parameterName}" 
+                                               th:value="${_csrf.token}"/>
+
+                                        <div class="mb-3">
+                                            <label for="nombreCompleto" class="form-label">
+                                                Nombre Completo <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nombreCompleto"
+                                                   name="nombreCompleto"
+                                                   th:value="${docente.nombreCompleto}"
+                                                   minlength="3"
+                                                   maxlength="100"
+                                                   required>
+                                            <div class="form-text">
+                                                Entre 3 y 100 caracteres
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" 
+                                                   class="form-control" 
+                                                   th:value="${docente.email}" 
+                                                   disabled>
+                                            <small class="text-muted">
+                                                <i class="fas fa-lock me-1"></i>
+                                                El email no puede ser modificado
+                                            </small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="especialidad" class="form-label">
+                                                Especialidad <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="especialidad"
+                                                   name="especialidad"
+                                                   th:value="${docente.especialidad}"
+                                                   minlength="3"
+                                                   maxlength="100"
+                                                   required>
+                                            <div class="form-text">
+                                                Entre 3 y 100 caracteres
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Grado Académico</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   th:value="${docente.gradoAcademico}" 
+                                                   disabled>
+                                            <small class="text-muted">
+                                                <i class="fas fa-lock me-1"></i>
+                                                El grado académico no puede ser modificado
+                                            </small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="biografia" class="form-label">
+                                                Biografía
+                                            </label>
+                                            <textarea class="form-control" 
+                                                      id="biografia"
+                                                      name="biografia"
+                                                      rows="4" 
+                                                      th:text="${docente.biografia}"
+                                                      maxlength="300"></textarea>
+                                            <small class="text-muted">
+                                                Máximo 300 caracteres. Campo opcional.
+                                            </small>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>
+                                                Guardar Cambios
+                                            </button>
+                                            <button type="reset" class="btn btn-outline-secondary">
+                                                <i class="fas fa-undo me-2"></i>
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

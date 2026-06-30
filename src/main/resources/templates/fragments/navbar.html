@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <body>
+        <!-- Navbar Fragment -->
+        <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+            <div class="container">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                    <i class="fas fa-graduation-cap text-primary me-2 fs-4"></i>
+                    <span class="fw-bold text-primary">Yachay T'inkiy</span>
+                </a>
+
+                <!-- Botón de catálogo (visible solo en desktop) -->
+                <a class="btn btn-primary me-auto d-none d-lg-block" th:href="@{/catalogo}">
+                    <i class="fas fa-search me-2"></i>Catálogo de Cursos
+                </a>
+
+                <!-- Toggler para móvil -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Links de navegación -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        <!-- Link de catálogo en móvil -->
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" th:href="@{/catalogo}">
+                                <i class="fas fa-search me-1"></i>Catálogo
+                            </a>
+                        </li>
+
+                        <!-- Si NO está autenticado -->
+                        <th:block sec:authorize="!isAuthenticated()">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/login}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ms-lg-2" th:href="@{/registro/alumno}">
+                                    <i class="fas fa-user-plus me-1"></i>Registrarse
+                                </a>
+                            </li>
+                        </th:block>
+
+                        <!-- Si está autenticado como ALUMNO -->
+                        <th:block sec:authorize="hasRole('ALUMNO')">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/perfil/alumno}">
+                                    <i class="fas fa-user me-1"></i>Mi Perfil
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button class="btn btn-outline-danger ms-lg-2" type="submit">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </th:block>
+
+                        <!-- Si está autenticado como DOCENTE -->
+                        <th:block sec:authorize="hasRole('DOCENTE')">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/cursos/crear}">
+                                    <i class="fas fa-plus-circle me-1"></i>Crear Curso
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/perfil/docente}">
+                                    <i class="fas fa-chalkboard-teacher me-1"></i>Mi Perfil
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button class="btn btn-outline-danger ms-lg-2" type="submit">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </th:block>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </body>
+</html>

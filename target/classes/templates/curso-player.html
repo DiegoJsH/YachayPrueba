@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title th:text="${progreso.tituloCurso} + ' - Aprender'">Curso - Aprender</title>
+    </head>
+
+    <body>
+        <div th:fragment="content">
+            <!-- Header del curso -->
+            <section class="bg-light py-3 border-bottom">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h5 class="mb-1 fw-bold" th:text="${progreso.tituloCurso}">
+                                Título del Curso
+                            </h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-check-circle text-success me-1"></i>
+                                    <span th:text="${progreso.leccionesCompletadas}">0</span> / 
+                                    <span th:text="${progreso.totalLecciones}">0</span> lecciones
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    <span th:text="${#numbers.formatDecimal(progreso.porcentajeProgreso, 0, 0)}">0</span>% completado
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
+                            <a th:href="@{/mis-cursos}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Volver a Mis Cursos
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Barra de progreso -->
+                    <div class="progress mt-3" style="height: 6px;">
+                        <div class="progress-bar bg-success" 
+                             role="progressbar"
+                             th:style="'width: ' + ${progreso.porcentajeProgreso} + '%'">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contenedor principal -->
+            <section class="player-container py-4">
+                <div class="container-fluid">
+                    <div class="row g-4">
+                        <!-- Área de contenido principal -->
+                        <div class="col-lg-9">
+                            <div class="content-area" id="contenido-leccion">
+                                <!-- El contenido se carga aquí dinámicamente -->
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <p class="mt-3 text-muted">Cargando lección...</p>
+                                </div>
+                            </div>
+
+                            <!-- Botones de navegación -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <button id="btn-anterior" class="btn btn-outline-primary" disabled>
+                                    <i class="fas fa-chevron-left me-2"></i>Lección Anterior
+                                </button>
+                                <button id="btn-siguiente" class="btn btn-primary">
+                                    Siguiente Lección<i class="fas fa-chevron-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar con lista de lecciones -->
+                        <div class="col-lg-3">
+                            <div class="sidebar-lessons" id="sidebar-progreso">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="fas fa-list me-2"></i>Contenido del Curso
+                                </h6>
+
+                                <!-- Módulos y lecciones -->
+                                <div th:each="modulo, modStat : ${progreso.modulos}">
+                                    <div class="modulo-header">
+                                        <i class="fas fa-folder me-2"></i>
+                                        <span th:text="'Módulo ' + ${modulo.orden} + ': ' + ${modulo.nombre}">
+                                            Módulo 1: Introducción
+                                        </span>
+                                    </div>
+
+                                    <div th:each="leccion : ${modulo.lecciones}">
+                                        <div class="leccion-item"
+                                             th:classappend="${leccion.completada} ? 'completada' : ''"
+                                             th:attrappend="class=${leccion.leccionId == leccionActualId} ? ' active' : ''"
+                                             th:data-leccion-id="${leccion.leccionId}"
+                                             th:data-titulo="${leccion.titulo}"
+                                             th:data-tipo="${leccion.tipoContenido}"
+                                             th:data-url="${leccion.urlContenido}"
+                                             th:data-descripcion="${leccion.descripcion}"
+                                             onclick="cargarLeccion(this)">
+
+                                            <!-- Icono según tipo -->
+                                            <i class="me-2" 
+                                               th:classappend="${leccion.tipoContenido == 'VIDEO'} ? 'fas fa-play-circle' : 
+                                               (${leccion.tipoContenido == 'PDF'} ? 'fas fa-file-pdf' : 
+                                               (${leccion.tipoContenido == 'TEXTO'} ? 'fas fa-file-alt' : 'fas fa-question-circle'))">
+                                            </i>
+
+                                            <span th:text="${leccion.titulo}">Título de la lección</span>
+
+                                            <!-- Check si completada -->
+                                            <i th:if="${leccion.completada}" 
+                                               class="fas fa-check-circle float-end text-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Variables de Thymeleaf para JS -->
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const cursoId = /*[[${cursoId}]]*/ 0;
+                let leccionActualId = /*[[${leccionActualId}]]*/ 0;
+                const inscripcionId = /*[[${inscripcionId}]]*/ 0;                
+                let todasLasLecciones = [];
+                // Obtener token CSRF para peticiones POST
+                const csrfToken = /*[[${_csrf.token}]]*/ '';
+                const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+                /*]]>*/
+            </script>
+
+            <!-- Cargar lógica externa -->
+            <script th:src="@{/js/player.js}"></script>
+            
+        </div>
+    </body>
+</html>            

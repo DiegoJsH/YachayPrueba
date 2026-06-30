@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Mis Cursos - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content">
+            <!-- Header -->
+            <section class="bg-light py-5">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h1 class="display-5 fw-bold mb-2">
+                                <i class="fas fa-book-reader text-primary me-2"></i>
+                                Mis Cursos
+                            </h1>
+                            <p class="lead text-muted mb-0">
+                                Continúa tu aprendizaje donde lo dejaste
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <a th:href="@{/catalogo}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i>Explorar Más Cursos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estadísticas -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${cursosEnProgreso}">0</span>
+                                <span class="stats-label">En Progreso</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${cursosCompletados}">0</span>
+                                <span class="stats-label">Completados</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="stats-card">
+                                <span class="stats-number" th:text="${#lists.size(inscripciones)}">0</span>
+                                <span class="stats-label">Total Cursos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje si no hay cursos -->
+                    <div th:if="${#lists.isEmpty(inscripciones)}" 
+                         class="text-center py-5">
+                        <i class="fas fa-graduation-cap text-muted" style="font-size: 5rem;"></i>
+                        <h3 class="mt-4 mb-3">Aún no estás inscrito en ningún curso</h3>
+                        <p class="lead text-muted mb-4">
+                            Explora nuestro catálogo y comienza tu viaje de aprendizaje
+                        </p>
+                        <a th:href="@{/catalogo}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search me-2"></i>Explorar Cursos
+                        </a>
+                    </div>
+
+                    <!-- Lista de cursos inscritos -->
+                    <div th:unless="${#lists.isEmpty(inscripciones)}">
+                        <!-- Filtros (para implementación futura) -->
+                        <div class="row mb-4">
+                            <div class="col-lg-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0">
+                                        <i class="fas fa-list me-2"></i>
+                                        Tus Cursos Inscritos
+                                    </h4>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" 
+                                                class="btn btn-outline-primary active" 
+                                                id="filtro-todos"
+                                                onclick="filtrarCursos('todos')">
+                                            <i class="fas fa-th me-1"></i>Todos
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-outline-primary" 
+                                                id="filtro-progreso"
+                                                onclick="filtrarCursos('progreso')">
+                                            <i class="fas fa-play me-1"></i>En Progreso
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-outline-primary" 
+                                                id="filtro-completados"
+                                                onclick="filtrarCursos('completados')">
+                                            <i class="fas fa-check me-1"></i>Completados
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Grid de cursos -->
+                        <div class="row g-4" id="cursos-grid">
+                            <div class="col-lg-4 col-md-6 curso-card-wrapper" 
+                                 th:each="inscripcion : ${inscripciones}"
+                                 th:attr="data-estado=${inscripcion.completado ? 'completado' : 'progreso'}">
+                                <div class="card h-100 shadow-sm hover-scale">
+                                    <!-- Imagen del curso -->
+                                    <div class="course-image position-relative">
+                                        <i class="fas fa-book-open me-2"></i>
+                                        <span th:text="${inscripcion.tituloCurso}">Título del Curso</span>
+
+                                        <!-- Badge de completado -->
+                                        <span th:if="${inscripcion.completado}" 
+                                              class="position-absolute top-0 end-0 m-2 badge bg-success">
+                                            <i class="fas fa-trophy me-1"></i>Completado
+                                        </span>
+                                    </div>
+
+                                    <!-- Contenido -->
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title mb-3" th:text="${inscripcion.tituloCurso}">
+                                            Título del Curso
+                                        </h5>
+
+                                        <!-- Barra de progreso -->
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <small class="text-muted fw-bold">Progreso del Curso</small>
+                                                <small class="fw-bold text-primary" 
+                                                       th:text="${#numbers.formatDecimal(inscripcion.progreso, 0, 0)} + '%'">
+                                                    0%
+                                                </small>
+                                            </div>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-primary" 
+                                                     role="progressbar"
+                                                     th:style="'width: ' + ${inscripcion.progreso} + '%'"
+                                                     th:attr="aria-valuenow=${inscripcion.progreso}">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Estadísticas de lecciones -->
+                                        <div class="mb-3">
+                                            <p class="small text-muted mb-1">
+                                                <i class="fas fa-check-circle text-success me-1"></i>
+                                                <span th:text="${inscripcion.leccionesCompletadas}">0</span> de 
+                                                <span th:text="${inscripcion.totalLecciones}">0</span> lecciones completadas
+                                            </p>
+                                            <p class="small text-muted mb-0">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Inscrito el 
+                                                <span th:text="${#temporals.format(inscripcion.fechaInscripcion, 'dd/MM/yyyy')}">
+                                                    01/01/2024
+                                                </span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Botones de acción -->
+                                        <div class="mt-auto">
+                                            <!-- Botón principal según estado -->
+                                            <div th:if="${inscripcion.completado}">
+                                                <button class="btn btn-success w-100 mb-2" disabled>
+                                                    <i class="fas fa-trophy me-2"></i>Curso Completado
+                                                </button>
+                                                <a th:href="@{/certificados}" class="btn btn-outline-primary w-100">
+                                                    <i class="fas fa-certificate me-2"></i>Ver Certificado
+                                                </a>
+                                            </div>
+
+                                            <div th:unless="${inscripcion.completado}">
+                                                <!-- Botón de continuar aprendiendo (FASE B) -->
+                                                <a th:href="@{/cursos/{id}/aprender(id=${inscripcion.cursoId})}" 
+                                                   class="btn btn-primary w-100 mb-2">
+                                                    <i class="fas fa-play me-2"></i>
+                                                    <span th:if="${inscripcion.progreso == 0}">Comenzar Curso</span>
+                                                    <span th:unless="${inscripcion.progreso == 0}">Continuar Aprendiendo</span>
+                                                </a>
+
+                                                <!-- Botón secundario -->
+                                                <a th:href="@{/cursos/{id}(id=${inscripcion.cursoId})}" 
+                                                   class="btn btn-outline-secondary w-100">
+                                                    <i class="fas fa-info-circle me-2"></i>Detalles del Curso
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Cargar lógica externa -->
+            <script th:src="@{/js/filter.js}"></script>
+        </div>
+    </body>
+</html>

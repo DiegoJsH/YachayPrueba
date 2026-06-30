@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::content})}">
+    <head>
+        <title>Registro de Docente - Yachay T'inkiy</title>
+    </head>
+    <body>
+        <div th:fragment="content" class="auth-container">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <div class="auth-card">
+                            <!-- Header -->
+                            <div class="auth-header">
+                                <i class="fas fa-chalkboard-teacher fa-3x mb-3"></i>
+                                <h2>Crear Cuenta de Docente</h2>
+                                <p class="mb-0 opacity-75">Comparte tu conocimiento con el mundo</p>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="auth-body">
+                                <!-- Mensaje de error -->
+                                <div th:if="${errorMessage}" class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <span th:text="${errorMessage}"></span>
+                                </div>
+
+                                <!-- Formulario de Registro -->
+                                <form th:action="@{/registro/docente}" 
+                                      method="post" 
+                                      th:object="${registroDocenteDTO}">
+
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label for="nombreCompleto" class="form-label">
+                                                <i class="fas fa-user me-1"></i>
+                                                Nombre Completo
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nombreCompleto" 
+                                                   th:field="*{nombreCompleto}"
+                                                   placeholder="Ej: Dr. Juan Pérez García"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreCompleto')}" 
+                                                 th:errors="*{nombreCompleto}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                Correo Electrónico
+                                            </label>
+                                            <input type="email" 
+                                                   class="form-control" 
+                                                   id="email" 
+                                                   th:field="*{email}"
+                                                   placeholder="tu@email.com"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" 
+                                                 th:errors="*{email}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="password" class="form-label">
+                                                <i class="fas fa-lock me-1"></i>
+                                                Contraseña
+                                            </label>
+                                            <input type="password" 
+                                                   class="form-control" 
+                                                   id="password" 
+                                                   th:field="*{password}"
+                                                   placeholder="Mínimo 8 caracteres"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" 
+                                                 th:errors="*{password}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="especialidad" class="form-label">
+                                                <i class="fas fa-brain me-1"></i>
+                                                Especialidad
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="especialidad" 
+                                                   th:field="*{especialidad}"
+                                                   placeholder="Ej: Programación Web"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('especialidad')}" 
+                                                 th:errors="*{especialidad}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="gradoAcademico" class="form-label">
+                                                <i class="fas fa-graduation-cap me-1"></i>
+                                                Grado Académico
+                                            </label>
+                                            <select class="form-select" 
+                                                    id="gradoAcademico" 
+                                                    th:field="*{gradoAcademico}"
+                                                    required>
+                                                <option value="">Seleccionar...</option>
+                                                <option value="Licenciado">Licenciado</option>
+                                                <option value="Magíster">Magíster</option>
+                                                <option value="Doctor">Doctor</option>
+                                                <option value="Especialista">Especialista</option>
+                                                <option value="Profesional">Profesional</option>
+                                            </select>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('gradoAcademico')}" 
+                                                 th:errors="*{gradoAcademico}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="biografia" class="form-label">
+                                            <i class="fas fa-file-alt me-1"></i>
+                                            Biografía (opcional)
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="biografia" 
+                                                  th:field="*{biografia}"
+                                                  rows="3"
+                                                  placeholder="Cuéntanos sobre tu experiencia profesional..."
+                                                  maxlength="300"></textarea>
+                                        <div class="form-text">
+                                            Máximo 300 caracteres
+                                        </div>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('biografia')}" 
+                                             th:errors="*{biografia}">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               id="terms" 
+                                               required>
+                                        <label class="form-check-label" for="terms">
+                                            Acepto los <a href="#">términos y condiciones para docentes</a>
+                                        </label>
+                                    </div>
+
+                                    <!-- Token CSRF -->
+                                    <input type="hidden" 
+                                           th:name="${_csrf.parameterName}" 
+                                           th:value="${_csrf.token}"/>
+
+                                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                                        Crear Cuenta de Docente
+                                    </button>
+                                </form>
+
+                                <!-- Links adicionales -->
+                                <div class="text-center mt-4">
+                                    <hr>
+                                    <p class="mb-2">
+                                        ¿Eres estudiante? 
+                                        <a th:href="@{/registro/alumno}" class="text-decoration-none fw-bold">
+                                            Regístrate como alumno
+                                        </a>
+                                    </p>
+                                    <p class="mb-0">
+                                        ¿Ya tienes cuenta? 
+                                        <a th:href="@{/login}" class="text-decoration-none fw-bold">
+                                            Inicia sesión
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
