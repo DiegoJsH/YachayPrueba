@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Maven
+target/
+.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+release.properties
+.flattened-pom.xml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Build
+*.jar
+*.class
+*.log
+
+# Node (si aplica)
+node_modules/
+npm-debug.log
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Documentación
+*.md
+README.md
